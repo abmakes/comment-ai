@@ -19,17 +19,23 @@ const messages: Message[] = [];
 
 export const aiRouter = createTRPCRouter({
   generateText: publicProcedure
-    .input(z.object({ prompt: z.string() }))
+    .input(z.object({
+      name: z.string(), 
+      behaviour: z.string(), 
+      grammar: z.string(), 
+      note: z.string()}))
     .mutation(async ({ input }) => {
-      const { prompt } = input;
-      const performance = "working hard and learning quickly"
-      const topic = "comparative pronouns"
-
+      const { name, behaviour, grammar, note } = input;
+      const unit = {topic: "", grammar: ""}
       const guidedComment = `
-        You are an ESL teachers assistant. Please write a 60 word comment about the student: ${prompt}
-        Reference the content of the unit: ${topic}
-        Comment on there performance: ${performance}
-        Give 3 options
+        You are an ESL teachers assistant. Please write a short 50 to 80 word comment about the student: ${name}
+        Reference the following factors to construct your comment. Give 2 differently worded options:
+
+        The content of the unit: ${unit.topic}
+        The grammar: They ${grammar} with the grammar on ${unit.grammar}
+        Comment on there class behaviour: ${behaviour}
+        Include the following: ${note}
+        End with an encouraging note eg. well done or keep up the good work.
       `
 
       messages.push({
