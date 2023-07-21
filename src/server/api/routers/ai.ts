@@ -39,21 +39,19 @@ export const aiRouter = createTRPCRouter({
         }),
       }))
     .mutation(async ({ input }) => {
-      const { name, behaviour, grammar, note } = input;
-      const unit = {
-        topic: "Personal possessions.", 
-        grammar: `Possessive adjectives: our / their. It's our camera. It's their phone. Questions with whose; 's for possession: Whose phone is this? It's Paula's.`
-      }
+      const { name, behaviour, grammar, note, unitData } = input;
       
       const guidedComment = `
-        You are an ESL teachers assistant. Please write a short 50 to 80 word comment about the student: ${name}
-        Reference the following factors to construct your comment. Give 2 differently worded options:
+        Give 2 differently worded options as a response:
+        
+        You are an ESL teachers assistant. Please write a short 50 to 60 word comment about the student: ${name}
+        Reference the following factors to construct your comment. 
 
-        The content of the unit: ${unit.topic}
-        The grammar: They ${grammar} with the grammar on ${unit.grammar}
+        The content of the unit: ${unitData.vocabulary}
+        The grammar: They ${grammar} with the grammar on ${unitData.grammar}
         Comment on there class behaviour: ${behaviour}
         Include the following: ${note}
-        End with an encouraging note eg. well done or keep up the good work.
+        End with an encouraging message
       `
 
       messages.push({
@@ -68,8 +66,6 @@ export const aiRouter = createTRPCRouter({
         })
 
         const generatedData = completion.data.choices[0]?.message?.content
-
-        console.log(generatedData)
 
         if (!completion) {
           throw new Error("Failed to generate text");
