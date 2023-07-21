@@ -49,7 +49,7 @@ export const aiRouter = createTRPCRouter({
 
         The content of the unit: ${unitData.vocabulary}
         The grammar: They ${grammar} with the grammar on ${unitData.grammar}
-        Comment on there class behaviour: ${behaviour}
+        Comment on there class behaviour, use synonyms for: ${behaviour} (use synonyms) 
         Include the following: ${note}
         End with an encouraging message
       `

@@ -199,6 +199,22 @@ export default function SearchForm() {
                   rounded-full
                   shadow-sm
                 "
+                onClick={()=>setBehaviour("Participates regularly")}
+              />
+              <span className="ml-2">Participates regularly</span>
+            </label>
+          </div>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="behaviour"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
                 onClick={()=>setBehaviour("Quiet and studious")}
                 />
               <span className="ml-2">Quiet and studious</span>
@@ -220,12 +236,44 @@ export default function SearchForm() {
               <span className="ml-2">Unfocused</span>
             </label>
           </div>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="behaviour"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
+                onClick={()=>setBehaviour("not applicable")}
+              />
+              <span className="ml-2">-na-</span>
+            </label>
+          </div>
         </div>
 
         <div className="mt-2">
           <span className="font-medium">
             Grammar
           </span>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="grammar"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
+                onClick={()=>setGrammar("Excelled")}
+                />
+              <span className="ml-2">Excelled</span>
+            </label>
+          </div>
           <div>
             <label className="inline-flex items-center">
               <input
@@ -288,6 +336,22 @@ export default function SearchForm() {
                 onClick={()=>setGrammar("Needs practice")}
                 />
               <span className="ml-2">Needs practice</span>
+            </label>
+          </div>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="grammar"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
+                onClick={()=>setGrammar("")}
+                />
+              <span className="ml-2">-na-</span>
             </label>
           </div>
         </div>
