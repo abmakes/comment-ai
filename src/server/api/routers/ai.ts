@@ -2,7 +2,14 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { OpenAIApi, Configuration } from "openai";
+import books from "../../../json/books.json" assert { type: "json" };
 
+type Unit = {
+  vocabulary: string;
+  grammar: string;
+  examples: string;
+  language_in_use: string;
+}
 
 const configuration = new Configuration({
   organization: process.env.OPEN_AI_ORGANIZATION,
@@ -23,10 +30,21 @@ export const aiRouter = createTRPCRouter({
       name: z.string(), 
       behaviour: z.string(), 
       grammar: z.string(), 
-      note: z.string()}))
+      note: z.string(),
+      unitData: z.object({
+        vocabulary: z.string(),
+        grammar: z.string(),
+        examples: z.string(),
+        language_in_use: z.string(),
+        }),
+      }))
     .mutation(async ({ input }) => {
       const { name, behaviour, grammar, note } = input;
-      const unit = {topic: "", grammar: ""}
+      const unit = {
+        topic: "Personal possessions.", 
+        grammar: `Possessive adjectives: our / their. It's our camera. It's their phone. Questions with whose; 's for possession: Whose phone is this? It's Paula's.`
+      }
+      
       const guidedComment = `
         You are an ESL teachers assistant. Please write a short 50 to 80 word comment about the student: ${name}
         Reference the following factors to construct your comment. Give 2 differently worded options:

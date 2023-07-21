@@ -1,19 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "~/utils/api";
+import books from "../json/books.json" assert { type: "json" };
 
-type ChatItem = {
+type ChatItem = { 
   name: string;
   content: string;
 };
+
+type UnitsArray = Unit[][]
+type Unit = {
+  vocabulary: string;
+  grammar: string;
+  examples: string;
+  language_in_use: string;
+}
 
 export default function SearchForm() {
   const [name, setName] = useState("");
   const [behaviour, setBehaviour] = useState("");
   const [grammar, setGrammar] = useState("");
-  const [note, setNote] = useState("enthusiastic and participates regularly");
+  const [note, setNote] = useState("");
   const [results, setResults] = useState<ChatItem>({name: "", content: "",});
-  const [unit, setUnit] = useState("Academy Starters");
-  const [book, setBook] = useState("Unit 1")
+  const [unit, setUnit] = useState("0");
+  const [book, setBook] = useState("0")
+  const [unitData, setUnitData] = useState<Unit>({
+      vocabulary: "string",
+      grammar: "string",
+      examples: "string",
+      language_in_use: "string",
+    }
+  )
+
+  useEffect(() => {
+    const setUnitContent = (book:number, unit:number) => {
+      console.log(book, unit)
+      const bookData:UnitsArray = books
+      const example:Unit = {
+        vocabulary: "string",
+        grammar: "string",
+        examples: "string",
+        language_in_use: "string",
+      }
+      if (bookData !== undefined) {
+        const bookContent:Unit = bookData?.[book]?.[unit] || example;
+        setUnitData(bookContent) 
+      }
+    };
+    setUnitContent(parseInt(book), parseInt(unit))
+  }, [unit, book]);
 
   const generatedTextMutation = api.aiRouter.generateText.useMutation({
     onSuccess: (data) => {
@@ -38,12 +72,11 @@ export default function SearchForm() {
       console.log("complete")
     },
   });
-
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // console.log(name, note, behaviour, grammar)
-    generatedTextMutation.mutate({name, note, behaviour, grammar})
+    generatedTextMutation.mutate({name, note, behaviour, grammar, unitData})
   };
 
   return (
@@ -60,17 +93,6 @@ export default function SearchForm() {
           className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
         />
       </div>
-      {/* <div className="mb-6">
-        <label htmlFor="performance" className="block mb-1 font-medium text-gray-400">
-          Performance
-        </label>
-        <textarea
-          id="performance"
-          value={performance}
-          onChange={(event) => setPerformance(event.target.value)}
-          className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-        />
-      </div> */}
       <label className="mb-6 flex flex-col">
         <span className="font-medium">
           Select book
@@ -87,13 +109,13 @@ export default function SearchForm() {
               rounded-md
               shadow-sm
             "
-            onChange={(e)=>setBook(e.target.value)}
+            onChange={(e)=>setBook(e.target.selectedOptions[0]?.id || "0")}
           >
-            <option>Academy Starters</option>
-            <option>Academy Stars 1</option>
-            <option>Academy Stars 2</option>
-            <option>Academy Stars 3</option>
-            <option>Academy Stars 4</option>
+            <option id="0">Academy Starters</option>
+            <option id="1">Academy Stars 1</option>
+            <option id="2">Academy Stars 2</option>
+            <option id="3">Academy Stars 3</option>
+            <option id="4">Academy Stars 4</option>
           </select>
           <select
             name="unit"
@@ -108,22 +130,27 @@ export default function SearchForm() {
               focus:border-indigo-300
               focus:ring
             "
-            onChange={(e)=>setUnit(e.target.value)}
+            onChange={(e)=>setUnit(e.target.selectedOptions[0]?.id || '1')}
           >
-            <option>Unit 1</option>
-            <option>Unit 2</option>
-            <option>Unit 3</option>
-            <option>Unit 4</option>
-            <option>Unit 5</option>
-            <option>Unit 6</option>
-            <option>Unit 7</option>
-            <option>Unit 8</option>
-            <option>Unit 9</option>
-            <option>Unit 10</option>
-
+            <option id="00">Unit 1</option>
+            <option id="01">Unit 2</option>
+            <option id="02">Unit 3</option>
+            <option id="03">Unit 4</option>
+            <option id="04">Unit 5</option>
+            <option id="05">Unit 6</option>
+            <option id="06">Unit 7</option>
+            <option id="07">Unit 8</option>
+            <option id="08">Unit 9</option>
+            <option id="09">Unit 10</option>
           </select>
+        </div>          
+        <div className="w-full p-3">
+          <div key={1}>Vocab: {unitData.vocabulary}</div> 
+          <div key={2}>Grammar: {unitData.grammar}</div>
+          <div key={3}>Language in use: {unitData.language_in_use}</div>
         </div>
       </label>
+
       <div className="mb-6 flex align-middle justify-center gap-6">
         <div className="mt-2">
           <span className="font-medium">
@@ -143,6 +170,22 @@ export default function SearchForm() {
                 onClick={()=>setBehaviour("High energy")}
               />
               <span className="ml-2">High energy</span>
+            </label>
+          </div>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="behaviour"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
+                onClick={()=>setBehaviour("Hard working")}
+              />
+              <span className="ml-2">Hard working</span>
             </label>
           </div>
           <div>
@@ -226,6 +269,22 @@ export default function SearchForm() {
                   rounded-full
                   shadow-sm
                 "
+                onClick={()=>setGrammar("Struggled a bit")}
+                />
+              <span className="ml-2">Struggled a bit</span>
+            </label>
+          </div>
+          <div>
+            <label className="inline-flex items-center">
+              <input
+                name="grammar"
+                type="radio"
+                className="
+                  text-indigo-600
+                  border-gray-300
+                  rounded-full
+                  shadow-sm
+                "
                 onClick={()=>setGrammar("Needs practice")}
                 />
               <span className="ml-2">Needs practice</span>
@@ -233,7 +292,6 @@ export default function SearchForm() {
           </div>
         </div>
       </div>
-
       <div className="mb-6">
         <label htmlFor="note" className="block mb-1 font-medium">
           {`Teacher's notes (will be included)`}
