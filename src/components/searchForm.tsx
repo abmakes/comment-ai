@@ -22,7 +22,9 @@ export default function SearchForm() {
   const [note, setNote] = useState("");
   const [results, setResults] = useState<ChatItem>({name: "", content: "",});
   const [unit, setUnit] = useState("0");
-  const [book, setBook] = useState("0")
+  const [book, setBook] = useState("0")  
+  const [length, setLength] = useState(50)
+
   const [unitData, setUnitData] = useState<Unit>({
       vocabulary: "string",
       grammar: "string",
@@ -76,14 +78,14 @@ export default function SearchForm() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // console.log(name, note, behaviour, grammar)
-    generatedTextMutation.mutate({name, note, behaviour, grammar, unitData})
+    generatedTextMutation.mutate({name, note, behaviour, grammar, unitData, length})
   };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto">
       <div className="mb-4">
         <label htmlFor="name" className="block mb-1 font-medium">
-          Name
+          Student name
         </label>
         <input
           type="text"
@@ -95,7 +97,7 @@ export default function SearchForm() {
       </div>
       <label className="mb-6 flex flex-col">
         <span className="font-medium">
-          Select book
+          Select current book and unit
         </span>
         <div className="flex justify-between">
           <select
@@ -355,6 +357,30 @@ export default function SearchForm() {
             </label>
           </div>
         </div>
+      </div>
+      <div className="flex justify-end align-middle h-7 gap-3">
+          <span>{`Set comment length (words): `}</span>
+          <label className="inline-flex items-center">
+            <select
+              name="comment-length"
+              className="
+                block
+                w-12
+                mt-1
+                text-slate-800
+                border-gray-300
+                rounded-md
+                shadow-sm
+              "
+              onChange={(e)=>setLength(parseInt(e.target.value || "50"))}
+            >
+              <option>30</option>
+              <option>40</option>
+              <option>50</option>
+              <option>60</option>
+              <option>70</option>
+            </select>
+          </label>
       </div>
       <div className="mb-6">
         <label htmlFor="note" className="block mb-1 font-medium">

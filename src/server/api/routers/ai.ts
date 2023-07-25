@@ -37,14 +37,15 @@ export const aiRouter = createTRPCRouter({
         examples: z.string(),
         language_in_use: z.string(),
         }),
+      length: z.number(),
       }))
     .mutation(async ({ input }) => {
-      const { name, behaviour, grammar, note, unitData } = input;
+      const { name, behaviour, grammar, note, unitData, length } = input;
       
       const guidedComment = `
-        Give 2 differently worded options as a response:
+        Give 2 differently worded options as a response labelled Option 1 and Option 2:
         
-        You are an ESL teachers assistant. Please write a short 50 to 60 word comment about the student: ${name}
+        You are an ESL teachers assistant. Please write a short ${length} word comment about the student: ${name}
         Reference the following factors to construct your comment. 
 
         The content of the unit: ${unitData.vocabulary}
