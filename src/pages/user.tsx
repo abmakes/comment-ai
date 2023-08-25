@@ -30,6 +30,12 @@ export default function Home() {
                   Sign in
                 </div>
               </SignInButton>
+              <Link href="../">              
+                <div className="w-64 h-12 rounded-full flex items-center justify-center border text-gray-600 bg-white border-gray-700 hover:text-violet-800 hover:fill-violet-800 hover:border-violet-800 hover:bg-violet-50 hover:shadow mb-3 cursor-pointer">
+                  Home
+                </div>
+              </Link>
+
             </div>
           }
           
