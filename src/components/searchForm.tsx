@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { api } from "~/utils/api";
 import books from "../json/books.json" assert { type: "json" };
 import parse from 'html-react-parser';
-import Image from "next/image";
-import Loading from "../loading-loop.svg"
-import { spawn } from "child_process";
+// import Image from "next/image";
+// import Loading from "../loading-loop.svg"
+// import { spawn } from "child_process";
 
 
 // type ChatItem = { 
@@ -31,7 +31,8 @@ export default function SearchForm() {
   const [unit, setUnit] = useState("0");
   const [book, setBook] = useState("0")  
   const [length, setLength] = useState(30)
-  const [temperature, setTemperature] = useState(70)
+  const [level, setLevel] = useState("Intermediate")
+  const [promptIndex, setPromptIndex] = useState(0);
 
   const [unitData, setUnitData] = useState<Unit>({
       vocabulary: "string",
@@ -40,6 +41,8 @@ export default function SearchForm() {
       language_in_use: "string",
     }
   )
+
+  const [aiProvider, setAiProvider] = useState(process.env.NEXT_PUBLIC_AI_PROVIDER || "openai");
 
   useEffect(() => {
     const setUnitContent = (book:number, unit:number) => {
@@ -85,7 +88,17 @@ export default function SearchForm() {
     event.preventDefault();
     setLoading(true)
     // console.log("name: ", name, ", note: ", note, ", behaviour: ", behaviour, ", grammar: ", grammar, ", length: ", length)
-    generatedTextMutation.mutate({name, note, behaviour, grammar, unitData, length})
+    generatedTextMutation.mutate({
+      name, 
+      note, 
+      behaviour, 
+      grammar, 
+      unitData, 
+      length, 
+      promptIndex, 
+      aiProvider,
+      level: level as "Simple" | "Intermediate" | "Advanced"
+    })
   };
 
   return (
@@ -173,8 +186,10 @@ export default function SearchForm() {
               >
                 <option id="High energy">High energy</option>
                 <option id="Hard working">Hard working</option>
+                <option id="Focused and involved">Focused and involved</option>
                 <option id="Participates regularly">Participates regularly</option>
                 <option id="Quiet and studious">Quiet and studious</option>
+                <option id="Needs to speak more">Needs to speak more</option>
                 <option id="Unfocused">Unfocused</option>
                 <option id="">-na-</option>
               </select>
@@ -197,9 +212,11 @@ export default function SearchForm() {
                 <option id="Excellent">Excelled</option>
                 <option id="Great understanding">Great understanding</option>
                 <option id="Good understanding">Good understanding</option>
-                <option id="Quiet and studious">Quiet and studious</option>
+                <option id="Mostly correct">Mostly correct</option>
                 <option id="Struggled a bit">Struggled a bit</option>
-                <option id="Needs practice">Needs practice</option>
+                <option id="Needs practice">Needs practice</option>                
+                <option id="Makes small mistakes">Makes small mistakes</option>                
+                <option id="Needs to review target">Needs to review target</option>
                 <option id="">-na-</option>
               </select>
             </div>
@@ -233,13 +250,14 @@ export default function SearchForm() {
 
             <div className="peer-checked:h-auto h-0 peer-checked:flex hidden self-end text-xs flex-col gap-1">
               <div className="self-end items-center gap-3">
-                <span>{`Set creativity (higher more creative): `}</span>
+                <span>{`Set comment language level:  `}</span>
                 <label className="inline-flex items-center">
                   <select
-                    name="comment-temp"
+                    name="comment-level"
                     className="
+                      text-center
                       block
-                      w-16
+                      w-32
                       mt-1
                       bg-gray-100
                       text-slate-800
@@ -248,26 +266,26 @@ export default function SearchForm() {
                       rounded-md
                       shadow-sm
                     "
-                    value={temperature}
-                    onChange={(e)=>setTemperature(parseInt(e.target.value || "70"))}
+                    value={level}
+                    onChange={(e)=>setLevel(e.target.value)}
                   >
-                    <option>50</option>
-                    <option>60</option>
-                    <option>70</option>
-                    <option>80</option>
-                    <option>90</option>
+                    <option>Simple</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+
                   </select>
                 </label>
               </div>        
               
               <div className="self-end items-center gap-3">
-                <span>{`Set comment length (words): `}</span>
+                <span>{`Set comment length (words):  `}</span>
                 <label className="inline-flex items-center">
                   <select
                     name="comment-length"
                     className="
+                      text-center
                       block
-                      w-16
+                      w-32
                       mt-1
                       bg-gray-100
                       text-slate-800
@@ -286,6 +304,35 @@ export default function SearchForm() {
                   </select>
                 </label>
               </div> 
+
+              <div className="self-end items-center gap-3">
+                <span>AI Provider:  </span>
+                <label className="inline-flex items-center">
+                  <select
+                    value={aiProvider}
+                    onChange={(e) => setAiProvider(e.target.value)}
+                  className="text-center block w-32 mt-1 bg-gray-100 text-slate-800 border-gray-300 p-1 rounded-md shadow-sm"
+                >
+                  <option value="openai">OpenAI</option>
+                    <option value="gemini">Gemini</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="self-end items-center gap-3">
+                <span>Guided Prompt:  </span>
+                <label className="inline-flex items-center">
+                  <select
+                    value={promptIndex}
+                    onChange={(e) => setPromptIndex(parseInt(e.target.value))}
+                    className="text-center block w-40 mt-1 bg-gray-100 text-slate-800 border-gray-300 p-1 rounded-md shadow-sm"
+                  >
+                    <option value="0">Standard prompt</option>
+                    <option value="1">Unique vocabulary</option>
+                    <option value="2">Teacher note focused</option>
+                  </select>
+                </label>
+              </div>
             </div>
           </label>
 
@@ -295,8 +342,10 @@ export default function SearchForm() {
                 ?                 
                 <svg className="stroke-gray-700 w-full h-8 mt-5"  xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" strokeLinecap="round" strokeWidth="2"><path strokeDasharray="60" strokeDashoffset="60" strokeOpacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path strokeDasharray="15" strokeDashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg>
                 : 
+                (
                 parse(results) || "Comments will display here"
-            }
+            )
+          }
           </div>
         </div>
       </div>

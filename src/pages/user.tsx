@@ -1,11 +1,9 @@
 import { SignInButton, UserProfile, SignOutButton, useAuth } from "@clerk/nextjs";
-import { redirect } from 'next/navigation'
 import Head from "next/head";
-
 import Link from "next/link";
 
 export default function Home() {
-  const { userId, isLoaded } = useAuth();
+  const { userId } = useAuth();
 
   return (
     <>
